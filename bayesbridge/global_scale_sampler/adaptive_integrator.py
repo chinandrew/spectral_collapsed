@@ -82,8 +82,8 @@ def refine_bounds(f, step_size, starting_point, threshold, max_iters, tail_thres
         if (
                 i != 1 and
                 abs_percent_change(rescaled_old_integral, new_integral) < threshold and
-                f.scaled_y[-1] < tail_threshold and
-                f.scaled_y[0] < tail_threshold
+                f.scaled_y[-1]/np.max(f.scaled_y) < tail_threshold and
+                f.scaled_y[0]/np.max(f.scaled_y) < tail_threshold
         ):
             return f
     warnings.warn(f"Max iterations {max_iters} reached in bound refinement")
