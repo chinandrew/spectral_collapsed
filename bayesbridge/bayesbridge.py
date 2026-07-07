@@ -402,7 +402,7 @@ class BayesBridge():
                     gscale, obs_prec, y_gaussian, self.model.design, lscale, self.prior, self.rg, method=gscale_method, proposal_sd=proposal_sd
                 )
             elif gscale_method in ("reject_halfcauchy", "slice_halfcauchy", "unif_prior"):
-                shape = (self.n_pred - self.n_unshrunk) / 2 + 1 / 2 - (gscale_method == "unif_prior")
+                shape = (self.n_pred - self.n_unshrunk) / 2 + 1 / 2
                 rate =  1 / 2 * (coef[self.n_unshrunk:] - self.prior.skew_mean) / (lscale * self.prior.skew_sd) ** 2 @ (coef[self.n_unshrunk:] - self.prior.skew_mean)
                 gscale = coef_full_sampler(gscale, shape, rate, gscale_method)
             else:
