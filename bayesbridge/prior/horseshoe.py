@@ -5,6 +5,7 @@ import scipy as sp
 from ..random.local_scale_sampler import sample_horseshoe_local_scale
 from .transfer_learning_helper import compute_horseshoe_lscale
 
+
 class HorseshoePrior():
 
     def __init__(
@@ -17,6 +18,7 @@ class HorseshoePrior():
             skew_sd=1.,
             global_scale_prior=None,
             gscale_prior_method=None,
+            gscale_prior_dist="unif",
             centered=True,
     ):
         """ Encapisulate horseshoe prior information for BayesBridge.
@@ -68,6 +70,7 @@ class HorseshoePrior():
         self.skew_sd = skew_sd
         self.centered = centered
         self.bridge_exp = None
+        self.gscale_prior_dist = gscale_prior_dist
         self._gscale_paramet = None
         if self.gscale_prior is None:
             self.gscale_prior_method = 'sample'
@@ -76,10 +79,14 @@ class HorseshoePrior():
             # Reference prior for a scale family.
             'gscale': None
         }
-    
-    def global_scale_prior(self, gscale):
-        return float(0 <= gscale <= 1)
 
+    def global_scale_prior(self, gscale):
+        if self.gscale_prior_dist == "unif":
+            return float(0 <= gscale <= 1)
+        elif self.gscale_prior_dist == "halfcauchy" and gscale > 0:
+            return 1 / (1 + gscale ** 2) if gscale > 0 else 0
+        else:
+            raise NotImplementedError
 
     def update_local_scale(self, gscale, coef, rg):
         # rg: random generator

@@ -21,6 +21,7 @@ def main(gscale_method, seed, proposal_sd):
         "mh_chol": [(25000, 1, float('inf'))],
         "inv_cdf_eig": [(10000, 1, float('inf'))],
         "unif_prior": [(10000, 1, float('inf'))], # full uncollapsed conditional
+        "reject_halfcauchy": [(10000, 1, float('inf'))],  # full uncollapsed conditional
     }
     config = configs[gscale_method]
 
@@ -29,7 +30,6 @@ def main(gscale_method, seed, proposal_sd):
         with open("snp_Xy_binary_1379.p", "rb") as f:
             X,y = pickle.load(f)
             X = X.astype(float)
-        n, p = X.shape
         print(X.shape)
         model = RegressionModel(
             y, X, family='logit',
@@ -42,6 +42,7 @@ def main(gscale_method, seed, proposal_sd):
             skew_sd=1.,
             global_scale_prior=None,
             centered=True,
+            gscale_prior_dist="halfcauchy" if "halfcauchy" in gscale_method else "unif"
         )
         np.random.seed(seed)
         init = {"coef": np.zeros(X.shape[1]+1),
